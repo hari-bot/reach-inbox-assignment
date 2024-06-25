@@ -10,7 +10,7 @@ const ReplyMail = ({ isModalOpen, toggleModal, gmail }) => {
     setLoading(true);
 
     try {
-      const response = await fetch("http://localhost:5000/api/genrate/gmail", {
+      const response = await fetch("http://localhost:5000/api/generate/gmail", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -1,12 +1,14 @@
 import { gmail_v1, google } from "googleapis";
 import { Base64 } from "js-base64";
-import { analyzeEmailContent } from "./openaiService";
 
-export const fetchGmailEmails = async (authToken: string) => {
+const createAuthClient = (authToken: string) => {
   const authClient = new google.auth.OAuth2();
   authClient.setCredentials({ access_token: authToken });
+  return google.gmail({ version: "v1", auth: authClient });
+};
 
-  const gmail = google.gmail({ version: "v1", auth: authClient });
+export const fetchGmailEmails = async (authToken: string) => {
+  const gmail = createAuthClient(authToken);
 
   try {
     const res = await gmail.users.messages.list({
@@ -16,7 +18,7 @@ export const fetchGmailEmails = async (authToken: string) => {
     });
 
     const messages = res.data.messages || [];
-    const emails: gmail_v1.Schema$Message[] = await Promise.all(
+    const emails = await Promise.all(
       messages.map(async (message) => {
         const messageRes = await gmail.users.messages.get({
           userId: "me",
@@ -60,11 +62,7 @@ export const sendGmailReply = async (
   replyRaw: string,
   toAddress: string
 ) => {
-  console.log("Authorization token:", authToken);
-  const authClient = new google.auth.OAuth2();
-  authClient.setCredentials({ access_token: authToken });
-
-  const gmail = google.gmail({ version: "v1", auth: authClient });
+  const gmail = createAuthClient(authToken);
 
   try {
     const messageResponse = await gmail.users.messages.get({
@@ -72,18 +70,15 @@ export const sendGmailReply = async (
       id: messageId,
     });
 
-    const message = messageResponse.data;
     const replyBody = `To: ${toAddress}\r\n\r\n${replyRaw}`;
     const encodedReply = Base64.encodeURI(replyBody);
 
-    const emailPayload = {
+    await gmail.users.messages.send({
       userId: "me",
-      resource: {
+      requestBody: {
         raw: encodedReply,
       },
-    };
-
-    await gmail.users.messages.send(emailPayload);
+    });
 
     console.log("Reply sent successfully.");
   } catch (error) {

@@ -19,13 +19,9 @@ export const getGmailAuthUrl = () => {
 };
 
 export const getGmailToken = async (code: string) => {
-  try {
-    const { tokens } = await oauth2Client.getToken(code);
-    oauth2Client.setCredentials(tokens);
-    return tokens;
-  } catch (error) {
-    console.log(error);
-  }
+  const { tokens } = await oauth2Client.getToken(code);
+  oauth2Client.setCredentials(tokens);
+  return tokens;
 };
 
 export const setGmailCredentials = (tokens: any) => {
