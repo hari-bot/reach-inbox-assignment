@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { fetchGmailEmails } from "../api";
+import ReplyMail from "./ReplyMail";
 
 const Emails = () => {
   const [emails, setEmails] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [error, setError] = useState(null);
+  const [currentMail, setCurrentMail] = useState({});
 
   useEffect(() => {
     const googleToken = localStorage.getItem("googleToken");
@@ -35,14 +38,23 @@ const Emails = () => {
     }
   };
 
+  const toggleModal = () => {
+    setIsModalOpen(!isModalOpen);
+  };
+
   if (error) {
     return <div>Error: {error}</div>;
   }
 
   return (
     <div className="p-4 mx-auto max-w-3xl bg-white font-sans mt-20 border rounded-lg shadow-md">
+      <ReplyMail
+        isModalOpen={isModalOpen}
+        toggleModal={toggleModal}
+        gmail={currentMail}
+      />
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-bold text-gray-800">Emails History</h2>
+        <h2 className="text-2xl font-bold text-gray-800">Email Inbox</h2>
       </div>
       <div className="space-y-4">
         {emails.length === 0 ? (
@@ -72,6 +84,15 @@ const Emails = () => {
                   </div>
                 </div>
                 <p className="text-md text-gray-700 mb-2">{email.body}</p>
+                <button
+                  className="text-sm border px-2 py-1 rounded-lg bg-green-500 text-white font-se hover:bg-green-600"
+                  onClick={() => {
+                    toggleModal();
+                    setCurrentMail(email);
+                  }}
+                >
+                  Reply with AI
+                </button>
               </li>
             ))}
           </ul>

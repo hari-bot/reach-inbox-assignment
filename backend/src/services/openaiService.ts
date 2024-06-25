@@ -33,8 +33,11 @@ const categorizeContent = (generatedText: string): string => {
 
 export const generateReply = async (context: string): Promise<string> => {
   try {
-    const model = genAI.getGenerativeModel({ model: "gpt-3.5-turbo" });
-    const result = await model.generateContent([context]);
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const result = await model.generateContent([
+      "`Generate a polite and professional response for an email categorized as: " +
+        context,
+    ]);
     return result.response.text();
   } catch (error) {
     console.error("Error generating reply:", error);
