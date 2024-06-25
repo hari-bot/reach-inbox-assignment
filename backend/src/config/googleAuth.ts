@@ -15,6 +15,7 @@ export const getGmailAuthUrl = () => {
   return oauth2Client.generateAuthUrl({
     access_type: "offline",
     scope: scopes,
+    prompt: "consent",
   });
 };
 
