@@ -1,7 +1,7 @@
-const API_URL = "http://localhost:5000";
+const API_URL = "http://localhost:5000/api";
 
 export const fetchGmailEmails = async (token) => {
-  const response = await fetch(`${API_URL}/emails/gmail`, {
+  const response = await fetch(`${API_URL}/emails/gmails`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },

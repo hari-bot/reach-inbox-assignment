@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import Emails from "../components/Emails";
 
 const HomePage = () => {
   const navigate = useNavigate();
@@ -15,13 +16,23 @@ const HomePage = () => {
 
     if (token) {
       localStorage.setItem("googleToken", token);
-      window.history.replaceState({}, document.title, "/home");
+
+      const urlWithoutToken = window.location.origin + window.location.pathname;
+      window.history.replaceState({}, document.title, urlWithoutToken);
     } else {
-      navigate("/");
+      const storedToken = localStorage.getItem("googleToken");
+      if (!storedToken) {
+        navigate("/");
+      }
     }
   }, [navigate, location.search]);
 
-  return <div>HomePage</div>;
+  return (
+    <div>
+      HomePage
+      <Emails />
+    </div>
+  );
 };
 
 export default HomePage;

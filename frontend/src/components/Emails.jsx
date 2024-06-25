@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { fetchGmailEmails, fetchOutlookEmails } from "./emailApi";
+import { fetchGmailEmails } from "../api";
 
 const Emails = () => {
   const [emails, setEmails] = useState([]);
@@ -10,11 +10,10 @@ const Emails = () => {
 
     const fetchEmails = async () => {
       try {
-        const [gmailEmails, outlookEmails] = await Promise.all([
-          googleToken ? fetchGmailEmails(googleToken) : [],
-          outlookToken ? fetchOutlookEmails(outlookToken) : [],
-        ]);
-        setEmails([...gmailEmails, ...outlookEmails]);
+        const gmailEmails = googleToken
+          ? await fetchGmailEmails(googleToken)
+          : [];
+        setEmails(gmailEmails);
       } catch (err) {
         setError(err.message);
       }
