@@ -1,4 +1,5 @@
 import { google } from "googleapis";
+import "dotenv/config";
 
 const oauth2Client = new google.auth.OAuth2(
   process.env.GOOGLE_CLIENT_ID,
@@ -18,9 +19,13 @@ export const getGmailAuthUrl = () => {
 };
 
 export const getGmailToken = async (code: string) => {
-  const { tokens } = await oauth2Client.getToken(code);
-  oauth2Client.setCredentials(tokens);
-  return tokens;
+  try {
+    const { tokens } = await oauth2Client.getToken(code);
+    oauth2Client.setCredentials(tokens);
+    return tokens;
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 export const setGmailCredentials = (tokens: any) => {

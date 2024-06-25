@@ -19,7 +19,7 @@ app.get("/auth/google", (req, res) => {
 app.get("/auth/google/callback", async (req, res) => {
   const { code } = req.query;
   const tokens = await getGmailToken(code as string);
-  res.send(`Google account connected! ${tokens}`);
+  res.redirect(`http://localhost:3000/home?token=${tokens?.access_token}`);
 });
 
 app.listen(process.env.PORT || 5000, () => {
