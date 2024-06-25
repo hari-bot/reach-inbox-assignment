@@ -1,4 +1,5 @@
 import { gmail_v1, google } from "googleapis";
+import { analyzeEmailContent } from "./openaiService";
 
 export const fetchGmailEmails = async (authToken: string) => {
   const authClient = new google.auth.OAuth2();
@@ -10,7 +11,7 @@ export const fetchGmailEmails = async (authToken: string) => {
     const res = await gmail.users.messages.list({
       userId: "me",
       q: "is:unread",
-      maxResults: 15,
+      maxResults: 5,
     });
 
     const messages = res.data.messages || [];
@@ -32,6 +33,7 @@ export const fetchGmailEmails = async (authToken: string) => {
         const subject = subjectHeader ? subjectHeader.value : "No Subject";
 
         const body = messageRes.data.snippet || "No snippet available";
+        // const category = await analyzeEmailContent(body);
 
         return {
           id: message.id!,
@@ -39,6 +41,7 @@ export const fetchGmailEmails = async (authToken: string) => {
           from,
           subject,
           body,
+          category: "Interested",
         };
       })
     );

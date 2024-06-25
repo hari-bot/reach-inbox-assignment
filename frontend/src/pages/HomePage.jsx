@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Emails from "../components/Emails";
+import Navbar from "../components/NavBar";
 
 const HomePage = () => {
   const navigate = useNavigate();
@@ -29,7 +30,7 @@ const HomePage = () => {
 
   return (
     <div>
-      HomePage
+      <Navbar />
       <Emails />
     </div>
   );
