@@ -3,7 +3,8 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const genAI = new GoogleGenerativeAI("AIzaSyCTAQkRvworA0CY82N1mCRV5DK07NzHjnM");
+const apiKey = process.env.GEMINI_API_KEY;
+const genAI = new GoogleGenerativeAI(apiKey as string);
 
 export const analyzeEmailContent = async (content: string): Promise<string> => {
   try {
