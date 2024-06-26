@@ -6,6 +6,7 @@ import {
   sendGmailReplyHandler,
 } from "./controllers/gmailController";
 import { getGmailAuthUrl, getGmailToken } from "./config/googleAuth";
+import "./queues/emailQueue";
 
 const app = express();
 app.use(express.json());

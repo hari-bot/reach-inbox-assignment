@@ -1,5 +1,6 @@
-import { gmail_v1, google } from "googleapis";
+import { google } from "googleapis";
 import { Base64 } from "js-base64";
+import { analyzeEmailContent } from "./openaiService";
 
 const createAuthClient = (authToken: string) => {
   const authClient = new google.auth.OAuth2();
@@ -44,7 +45,7 @@ export const fetchGmailEmails = async (authToken: string) => {
           from,
           subject,
           body,
-          category: "Interested",
+          category: "Intrested",
         };
       })
     );
