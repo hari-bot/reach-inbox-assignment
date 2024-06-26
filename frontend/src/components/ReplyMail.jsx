@@ -76,7 +76,10 @@ const ReplyMail = ({ isModalOpen, toggleModal, gmail }) => {
                 </h3>
                 <button
                   type="button"
-                  onClick={toggleModal}
+                  onClick={() => {
+                    toggleModal();
+                    setReply("");
+                  }}
                   className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 inline-flex justify-center items-center"
                 >
                   <svg
@@ -142,7 +145,10 @@ const ReplyMail = ({ isModalOpen, toggleModal, gmail }) => {
                 </button>
                 <button
                   className="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center ml-4"
-                  onClick={sendMail}
+                  onClick={() => {
+                    sendMail();
+                    setReply("");
+                  }}
                   disabled={loading || !reply.trim()}
                 >
                   {loading ? "Sending..." : "Send"}
