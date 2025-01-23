@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Emails from "../components/Emails";
 import Navbar from "../components/NavBar";
@@ -6,6 +6,7 @@ import Navbar from "../components/NavBar";
 const HomePage = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [userInfo, setUserInfo] = useState(null);
 
   useEffect(() => {
     const getQueryParameterByName = (name) => {
@@ -14,15 +15,26 @@ const HomePage = () => {
     };
 
     const token = getQueryParameterByName("token");
+    const userInfoString = getQueryParameterByName("userInfo");
 
     if (token) {
       localStorage.setItem("googleToken", token);
 
-      const urlWithoutToken = window.location.origin + window.location.pathname;
-      window.history.replaceState({}, document.title, urlWithoutToken);
+      if (userInfoString) {
+        const userInfo = JSON.parse(decodeURIComponent(userInfoString));
+        setUserInfo(userInfo);
+        localStorage.setItem("userInfo", JSON.stringify(userInfo));
+      }
+
+      const urlWithoutParams =
+        window.location.origin + window.location.pathname;
+      window.history.replaceState({}, document.title, urlWithoutParams);
     } else {
       const storedToken = localStorage.getItem("googleToken");
-      if (!storedToken) {
+      const storedUserInfo = localStorage.getItem("userInfo");
+      if (storedToken && storedUserInfo) {
+        setUserInfo(JSON.parse(storedUserInfo));
+      } else {
         navigate("/");
       }
     }
@@ -30,7 +42,7 @@ const HomePage = () => {
 
   return (
     <div>
-      <Navbar />
+      <Navbar userInfo={userInfo} />
       <Emails />
     </div>
   );

@@ -19,8 +19,17 @@ app.get("/auth/google", (req, res) => {
 
 app.get("/auth/google/callback", async (req, res) => {
   const { code } = req.query;
-  const tokens = await getGmailToken(code as string);
-  res.redirect(`http://localhost:3000/home?token=${tokens?.access_token}`);
+  try {
+    const { tokens, userInfo } = await getGmailToken(code as string);
+    const userInfoString = encodeURIComponent(JSON.stringify(userInfo));
+
+    res.redirect(
+      `http://localhost:3000/home?token=${tokens.access_token}&userInfo=${userInfoString}`
+    );
+  } catch (error) {
+    console.error("Error during Google callback:", error);
+    res.status(500).send("Authentication failed");
+  }
 });
 
 app.get("/api/emails/gmails", getEmails);
