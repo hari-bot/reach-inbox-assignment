@@ -37,7 +37,8 @@ export const fetchGmailEmails = async (authToken: string) => {
         const subject = subjectHeader ? subjectHeader.value : "No Subject";
 
         const body = messageRes.data.snippet || "No snippet available";
-        const category = await analyzeEmailContent(body);
+        // const category = await analyzeEmailContent(body);
+        const category = "Interested";
 
         return {
           id: message.id!,

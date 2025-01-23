@@ -59,109 +59,100 @@ const ReplyMail = ({ isModalOpen, toggleModal, gmail }) => {
     return match ? match[1] : "";
   };
 
+  if (!isModalOpen) return null;
+
   return (
-    <>
-      {isModalOpen && (
-        <div
-          id="replymail-modal"
-          tabIndex="-1"
-          aria-hidden="true"
-          className="fixed top-0 right-0 left-0 z-50 flex justify-center items-center w-full h-full bg-gray-800 bg-opacity-50"
-        >
-          <div className="relative p-4 w-full max-w-xl">
-            <div className="relative bg-white rounded-lg shadow">
-              <div className="flex items-center justify-between p-4 md:p-5 border-b rounded-t">
-                <h3 className="text-lg font-semibold text-gray-900">
-                  Reply to Email
-                </h3>
-                <button
-                  type="button"
-                  onClick={() => {
-                    toggleModal();
-                    setReply("");
-                  }}
-                  className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 inline-flex justify-center items-center"
-                >
-                  <svg
-                    className="w-3 h-3"
-                    aria-hidden="true"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 14 14"
-                  >
-                    <path
-                      stroke="currentColor"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
-                    />
-                  </svg>
-                  <span className="sr-only">Close modal</span>
-                </button>
-              </div>
-              <form className="p-4 md:p-5">
-                <div className="mb-4">
-                  <label
-                    htmlFor="to"
-                    className="block mb-2 text-sm font-medium text-gray-900"
-                  >
-                    To
-                  </label>
-                  <input
-                    type="email"
-                    name="to"
-                    id="to"
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                    placeholder="recipient@example.com"
-                    value={extractEmailAddress(gmail.from)}
-                    disabled
-                  />
-                </div>
-                <div className="mb-4">
-                  <label
-                    htmlFor="message"
-                    className="block mb-2 text-sm font-medium text-gray-900"
-                  >
-                    Mail Body
-                  </label>
-                  <textarea
-                    id="message"
-                    name="message"
-                    rows="12"
-                    className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="Write your message here"
-                    required
-                    value={reply}
-                    onChange={(e) => setReply(e.target.value)}
-                  />
-                </div>
-                <button
-                  className="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
-                  disabled={loading}
-                  onClick={generateReply}
-                >
-                  {loading ? "Generating..." : "Generate With AI ✦"}
-                </button>
-                <button
-                  className="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center ml-4"
-                  onClick={() => {
-                    sendMail();
-                    setReply("");
-                  }}
-                  disabled={loading || !reply.trim()}
-                >
-                  {loading ? "Sending..." : "Send"}
-                </button>
-                {sendStatus && (
-                  <p className="mt-2 text-sm text-gray-900">{sendStatus}</p>
-                )}
-              </form>
-            </div>
-          </div>
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-50 flex items-center justify-center">
+      <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl m-4">
+        <div className="flex items-center justify-between p-6 border-b">
+          <h3 className="text-2xl font-semibold text-gray-900">
+            Reply to Email
+          </h3>
+          <button
+            onClick={() => {
+              toggleModal();
+              setReply("");
+            }}
+            className="text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          >
+            <span className="sr-only">Close</span>
+            <svg
+              className="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
         </div>
-      )}
-    </>
+        <form className="p-6">
+          <div className="mb-4">
+            <label
+              htmlFor="to"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
+              To
+            </label>
+            <input
+              type="email"
+              name="to"
+              id="to"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              value={extractEmailAddress(gmail.from)}
+              disabled
+            />
+          </div>
+          <div className="mb-4">
+            <label
+              htmlFor="message"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
+              Mail Body
+            </label>
+            <textarea
+              id="message"
+              name="message"
+              rows="8"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              placeholder="Write your message here"
+              required
+              value={reply}
+              onChange={(e) => setReply(e.target.value)}
+            />
+          </div>
+          <div className="flex justify-between items-center">
+            <button
+              className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-md transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              disabled={loading}
+              onClick={generateReply}
+            >
+              {loading ? "Generating..." : "Generate With AI ✦"}
+            </button>
+            <button
+              className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+              onClick={() => {
+                sendMail();
+                setReply("");
+              }}
+              disabled={loading || !reply.trim()}
+            >
+              {loading ? "Sending..." : "Send"}
+            </button>
+          </div>
+          {sendStatus && (
+            <p className="mt-4 text-sm text-center font-medium text-gray-900">
+              {sendStatus}
+            </p>
+          )}
+        </form>
+      </div>
+    </div>
   );
 };
 

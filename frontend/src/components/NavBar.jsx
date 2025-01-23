@@ -7,23 +7,24 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-white p-4 flex justify-between items-center shadow-md">
-      <div className="flex items-center gap-3">
-        <img
-          className="w-auto h-7 sm:h-8"
-          src="https://cdn-icons-png.flaticon.com/128/1309/1309475.png"
-          alt="Logo"
-        />
-        <h1 className="text-2xl font-semibold text-black capitalize sm:text-3xl">
-          ReplyAI
-        </h1>
+    <nav className="bg-gradient-to-r from-blue-500 to-indigo-600 p-4 shadow-lg">
+      <div className="container mx-auto flex justify-between items-center">
+        <div className="flex items-center space-x-3">
+          <img
+            className="w-10 h-10 rounded-full border-2 border-white"
+            src="https://cdn-icons-png.flaticon.com/128/1309/1309475.png"
+            alt="Logo"
+          />
+          <h1 className="text-2xl font-bold text-white">ReplyAI</h1>
+        </div>
+        <button
+          onClick={handleLogout}
+          className="flex items-center space-x-2 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-300 focus:ring-opacity-50"
+        >
+          <CiLogout className="text-xl" />
+          <span>Logout</span>
+        </button>
       </div>
-      <button
-        onClick={handleLogout}
-        className="flex items-center gap-2 bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-300"
-      >
-        <CiLogout /> Logout
-      </button>
     </nav>
   );
 };

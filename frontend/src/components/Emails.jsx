@@ -28,13 +28,13 @@ const Emails = () => {
   const getStatusClass = (status) => {
     switch (status) {
       case "Interested":
-        return "text-green-500 border-green-500";
+        return "bg-green-100 text-green-800 border-green-300";
       case "More Information":
-        return "text-yellow-500 border-yellow-500";
+        return "bg-yellow-100 text-yellow-800 border-yellow-300";
       case "Not Interested":
-        return "text-red-500 border-red-500";
+        return "bg-red-100 text-red-800 border-red-300";
       default:
-        return "";
+        return "bg-gray-100 text-gray-800 border-gray-300";
     }
   };
 
@@ -43,56 +43,71 @@ const Emails = () => {
   };
 
   if (error) {
-    return <div>Error: {error}</div>;
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div
+          className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-lg shadow-md"
+          role="alert"
+        >
+          <p className="font-bold">Error</p>
+          <p>{error}</p>
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div className="p-4 mx-auto max-w-3xl bg-white font-sans mt-20 border rounded-lg shadow-md">
+    <div className="container mx-auto px-4 py-8">
       <ReplyMail
         isModalOpen={isModalOpen}
         toggleModal={toggleModal}
         gmail={currentMail}
       />
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-bold text-gray-800">Email Inbox</h2>
-      </div>
-      <div className="space-y-4">
+      <div className="bg-white rounded-lg shadow-lg p-6">
+        <h2 className="text-3xl font-bold text-gray-800 mb-6">Email Inbox</h2>
         {emails.length === 0 ? (
-          <p className="text-center text-gray-500">No emails to display.</p>
+          <p className="text-center text-gray-500 py-8">
+            No emails to display.
+          </p>
         ) : (
-          <ul className="space-y-4">
+          <ul className="space-y-6">
             {emails.map((email) => (
               <li
                 key={email.id}
-                className="bg-gray-50 p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300"
+                className="bg-gray-50 p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 border border-gray-200"
               >
-                <div className="flex justify-between items-center mb-2">
+                <div className="flex justify-between items-start mb-4">
                   <div>
-                    <div>
-                      <h3 className="text-lg font-semibold text-gray-900">
-                        {email.subject}
-                      </h3>
-                    </div>
-                    <p className="text-sm text-gray-500">From: {email.from}</p>
-                    <small
-                      className={`font-light px-2 rounded-lg border ${getStatusClass(
+                    <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                      {email.subject}
+                    </h3>
+                    <p className="text-sm text-gray-600 mb-2">
+                      From: {email.from}
+                    </p>
+                    <span
+                      className={`text-xs font-medium px-2 py-1 rounded-full ${getStatusClass(
                         email.category
                       )}`}
                     >
                       {email.category}
-                    </small>
+                    </span>
                   </div>
+                  <button
+                    className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-opacity-50"
+                    onClick={() => {
+                      toggleModal();
+                      setCurrentMail(email);
+                    }}
+                  >
+                    Reply with AI
+                  </button>
                 </div>
-                <p className="text-md text-gray-700 mb-2">{email.body}</p>
-                <button
-                  className="text-sm border px-2 py-1 rounded-lg bg-green-500 text-white font-se hover:bg-green-600"
-                  onClick={() => {
-                    toggleModal();
-                    setCurrentMail(email);
+                <div
+                  className="text-gray-700 mb-4 prose max-w-none"
+                  dangerouslySetInnerHTML={{
+                    __html: email.body,
                   }}
-                >
-                  Reply with AI
-                </button>
+                />
               </li>
             ))}
           </ul>
