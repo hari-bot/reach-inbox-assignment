@@ -36,8 +36,9 @@ export const fetchGmailEmails = async (authToken: string) => {
         );
         const subject = subjectHeader ? subjectHeader.value : "No Subject";
 
-        const body = messageRes.data.snippet || "No snippet available";
-        // const category = await analyzeEmailContent(body);
+        const body = extractEmailBody(messageRes.data.payload);
+
+        // Replace this with your category analysis logic if needed
         const category = "Interested";
 
         return {
@@ -56,6 +57,35 @@ export const fetchGmailEmails = async (authToken: string) => {
     console.error("Error fetching Gmail emails:", error);
     throw new Error("Failed to fetch Gmail emails");
   }
+};
+
+const extractEmailBody = (payload: any): string => {
+  if (!payload) return "No content available";
+
+  const mimeType = payload.mimeType;
+
+  // For single-part messages
+  if (mimeType === "text/plain" || mimeType === "text/html") {
+    return decodeBase64Url(payload.body?.data || "");
+  }
+
+  // For multipart messages
+  if (payload.parts && payload.parts.length > 0) {
+    const part = payload.parts.find(
+      (p: any) => p.mimeType === "text/plain" || p.mimeType === "text/html"
+    );
+    return part
+      ? decodeBase64Url(part.body?.data || "")
+      : "No content available";
+  }
+
+  return "No content available";
+};
+
+const decodeBase64Url = (encoded: string): string => {
+  if (!encoded) return "";
+  const decoded = Buffer.from(encoded, "base64").toString("utf-8");
+  return decoded;
 };
 
 export const sendGmailReply = async (

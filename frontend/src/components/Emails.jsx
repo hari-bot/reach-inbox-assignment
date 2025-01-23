@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { fetchGmailEmails } from "../api";
 import ReplyMail from "./ReplyMail";
-import { FiChevronDown, FiChevronUp } from "react-icons/fi";
+import EmailModal from "./EmailModal";
 
 const Emails = () => {
   const [emails, setEmails] = useState([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isReplyModalOpen, setIsReplyModalOpen] = useState(false);
+  const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
   const [error, setError] = useState(null);
   const [currentMail, setCurrentMail] = useState({});
-  const [expandedEmails, setExpandedEmails] = useState({});
 
   useEffect(() => {
     const googleToken = localStorage.getItem("googleToken");
@@ -18,7 +18,12 @@ const Emails = () => {
         const gmailEmails = googleToken
           ? await fetchGmailEmails(googleToken)
           : [];
-        setEmails(gmailEmails);
+        setEmails(
+          gmailEmails.map((email) => ({
+            ...email,
+            isHtml: email.body.trim().startsWith("<"),
+          }))
+        );
       } catch (err) {
         setError(err.message);
       }
@@ -40,12 +45,13 @@ const Emails = () => {
     }
   };
 
-  const toggleModal = () => {
-    setIsModalOpen(!isModalOpen);
+  const toggleReplyModal = () => {
+    setIsReplyModalOpen(!isReplyModalOpen);
   };
 
-  const toggleEmailExpansion = (id) => {
-    setExpandedEmails((prev) => ({ ...prev, [id]: !prev[id] }));
+  const toggleEmailModal = (email) => {
+    setCurrentMail(email);
+    setIsEmailModalOpen(!isEmailModalOpen);
   };
 
   if (error) {
@@ -55,9 +61,15 @@ const Emails = () => {
   return (
     <div className="p-6 mx-auto max-w-5xl bg-gradient-to-b from-white to-indigo-50 font-sans mt-8 rounded-lg shadow-2xl">
       <ReplyMail
-        isModalOpen={isModalOpen}
-        toggleModal={toggleModal}
+        isModalOpen={isReplyModalOpen}
+        toggleModal={toggleReplyModal}
         gmail={currentMail}
+      />
+      <EmailModal
+        isOpen={isEmailModalOpen}
+        onClose={() => setIsEmailModalOpen(false)}
+        email={currentMail}
+        isHtml={currentMail.isHtml}
       />
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-3xl font-bold text-indigo-800">Email Inbox</h2>
@@ -72,9 +84,10 @@ const Emails = () => {
             {emails.map((email) => (
               <li
                 key={email.id}
-                className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 border border-indigo-100"
+                className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 border border-indigo-100 cursor-pointer"
+                onClick={() => toggleEmailModal(email)}
               >
-                <div className="flex justify-between items-start mb-4">
+                <div className="flex justify-between items-start">
                   <div>
                     <h3 className="text-xl font-semibold text-indigo-900 mb-2">
                       {email.subject}
@@ -83,7 +96,7 @@ const Emails = () => {
                       From: {email.from}
                     </p>
                     <span
-                      className={`text-sm font-medium px-3 py-1 rounded-full border  ${getStatusClass(
+                      className={`text-sm font-medium px-3 py-1 rounded-full border ${getStatusClass(
                         email.category
                       )}`}
                     >
@@ -92,36 +105,13 @@ const Emails = () => {
                   </div>
                   <button
                     className="text-sm bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-semibold px-4 py-2 rounded-lg hover:from-indigo-600 hover:to-purple-700 transition duration-300 ease-in-out transform hover:scale-105"
-                    onClick={() => {
-                      toggleModal();
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleReplyModal();
                       setCurrentMail(email);
                     }}
                   >
                     Reply with AI
-                  </button>
-                </div>
-                <div className="mt-4">
-                  <div
-                    className={`text-md text-gray-700 ${
-                      expandedEmails[email.id] ? "" : "line-clamp-3"
-                    }`}
-                    dangerouslySetInnerHTML={{
-                      __html: email.body,
-                    }}
-                  />
-                  <button
-                    className="mt-2 text-indigo-600 hover:text-indigo-800 font-medium flex items-center transition duration-300 ease-in-out"
-                    onClick={() => toggleEmailExpansion(email.id)}
-                  >
-                    {expandedEmails[email.id] ? (
-                      <>
-                        Show Less <FiChevronUp className="w-5 h-5 ml-1" />
-                      </>
-                    ) : (
-                      <>
-                        Show More <FiChevronDown className="w-5 h-5 ml-1" />
-                      </>
-                    )}
                   </button>
                 </div>
               </li>
