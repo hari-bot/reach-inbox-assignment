@@ -83,7 +83,7 @@ const Emails = () => {
                       From: {email.from}
                     </p>
                     <span
-                      className={`text-sm font-medium px-3 py-1 rounded-full ${getStatusClass(
+                      className={`text-sm font-medium px-3 py-1 rounded-full border  ${getStatusClass(
                         email.category
                       )}`}
                     >

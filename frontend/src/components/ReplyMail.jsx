@@ -2,12 +2,13 @@ import React, { useState } from "react";
 
 const ReplyMail = ({ isModalOpen, toggleModal, gmail }) => {
   const [reply, setReply] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [loadingGenerate, setLoadingGenerate] = useState(false); // Separate state for Generate button
+  const [loadingSend, setLoadingSend] = useState(false); // Separate state for Send button
   const [sendStatus, setSendStatus] = useState("");
 
   const generateReply = async (e) => {
     e.preventDefault();
-    setLoading(true);
+    setLoadingGenerate(true);
 
     try {
       const response = await fetch("http://localhost:5000/api/generate/gmail", {
@@ -23,12 +24,12 @@ const ReplyMail = ({ isModalOpen, toggleModal, gmail }) => {
     } catch (error) {
       console.error("Error generating reply:", error);
     } finally {
-      setLoading(false);
+      setLoadingGenerate(false);
     }
   };
 
   const sendMail = async () => {
-    setLoading(true);
+    setLoadingSend(true);
 
     try {
       const response = await fetch("http://localhost:5000/api/send/gmail", {
@@ -50,7 +51,7 @@ const ReplyMail = ({ isModalOpen, toggleModal, gmail }) => {
       console.error("Error sending email:", error);
       setSendStatus("Failed to send email. Please try again.");
     } finally {
-      setLoading(false);
+      setLoadingSend(false);
     }
   };
 
@@ -139,10 +140,10 @@ const ReplyMail = ({ isModalOpen, toggleModal, gmail }) => {
                 <div className="flex justify-between items-center">
                   <button
                     className="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center transition duration-300 ease-in-out"
-                    disabled={loading}
+                    disabled={loadingGenerate}
                     onClick={generateReply}
                   >
-                    {loading ? "Generating..." : "Generate With AI ✦"}
+                    {loadingGenerate ? "Generating..." : "Generate With AI ✦"}
                   </button>
                   <button
                     className="text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center transition duration-300 ease-in-out"
@@ -150,9 +151,9 @@ const ReplyMail = ({ isModalOpen, toggleModal, gmail }) => {
                       sendMail();
                       setReply("");
                     }}
-                    disabled={loading || !reply.trim()}
+                    disabled={loadingSend || !reply.trim()}
                   >
-                    {loading ? "Sending..." : "Send"}
+                    {loadingSend ? "Sending..." : "Send"}
                   </button>
                 </div>
                 {sendStatus && (
