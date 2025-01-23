@@ -94,17 +94,46 @@ export const sendGmailReply = async (
   replyRaw: string,
   toAddress: string
 ) => {
-  const gmail = createAuthClient(authToken);
+  const oauth2Client = new google.auth.OAuth2();
+  oauth2Client.setCredentials({ access_token: authToken });
+
+  const gmail = google.gmail({ version: "v1", auth: oauth2Client });
 
   try {
+    // Fetch the original message details to get headers for reply
     const messageResponse = await gmail.users.messages.get({
       userId: "me",
       id: messageId,
+      format: "metadata",
+      metadataHeaders: ["In-Reply-To", "References", "Message-ID"],
     });
 
-    const replyBody = `To: ${toAddress}\r\n\r\n${replyRaw}`;
-    const encodedReply = Base64.encodeURI(replyBody);
+    const headers = messageResponse.data.payload?.headers || [];
+    const inReplyTo = headers.find(
+      (header) => header.name === "Message-ID"
+    )?.value;
+    const references = headers.find(
+      (header) => header.name === "References"
+    )?.value;
 
+    // Construct the reply email
+    const replyBody = [
+      `To: ${toAddress}`,
+      `In-Reply-To: ${inReplyTo || ""}`,
+      `References: ${references || ""}`,
+      "Subject: Re: Your Email",
+      "",
+      replyRaw,
+    ].join("\r\n");
+
+    // Encode the reply in Base64URL
+    const encodedReply = Buffer.from(replyBody)
+      .toString("base64")
+      .replace(/\+/g, "-")
+      .replace(/\//g, "_")
+      .replace(/=+$/, "");
+
+    // Send the reply
     await gmail.users.messages.send({
       userId: "me",
       requestBody: {

@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { fetchGmailEmails, sendGmailReply } from "../services/emailService";
 import { generateReply } from "../services/openaiService";
 import { extractEmailAddress } from "../utils/helpers";
-import { emailQueue } from "../queues/emailQueue";
+// import { emailQueue } from "../queues/emailQueue";
 
 export const getEmails = async (req: Request, res: Response) => {
   try {
@@ -37,16 +37,12 @@ export const sendGmailReplyHandler = async (req: Request, res: Response) => {
     }
     const token = authHeader.split(" ")[1];
     const { mailId, reply, toAddress } = req.body;
+
     const email = extractEmailAddress(toAddress);
 
-    await emailQueue.add("send-email", {
-      authToken: token,
-      messageId: mailId,
-      replyRaw: reply,
-      toAddress: email,
-    });
+    await sendGmailReply(token, mailId, reply, email);
 
-    res.json({ message: "Email sending task has been added to the queue" });
+    res.json({ message: "Email sent successfully" });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to send reply" });
